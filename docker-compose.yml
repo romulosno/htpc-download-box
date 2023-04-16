@@ -29,19 +29,6 @@ services:
       - ${ROOT}/downloads/torrent-blackhole:/downloads # place where to put .torrent files for manual download
       - ${ROOT}/config/jackett:/config # config files
 
-  nzbget:
-    container_name: nzbget
-    image: linuxserver/nzbget:latest
-    restart: unless-stopped
-    network_mode: host
-    environment:
-      - PUID=${PUID} # default user id, defined in .env
-      - PGID=${PGID} # default group id, defined in .env
-      - TZ=${TZ} # timezone, defined in .env
-    volumes:
-      - ${ROOT}/downloads:/downloads # download folder
-      - ${ROOT}/config/nzbget:/config # config files
-
   sonarr:
     container_name: sonarr
     image: linuxserver/sonarr:latest
@@ -72,18 +59,6 @@ services:
       - ${ROOT}/complete/movies:/movies # movies folder
       - ${ROOT}/downloads:/downloads # download folder
 
-  plex-server:
-    container_name: plex-server
-    image: plexinc/pms-docker:latest
-    restart: unless-stopped
-    environment:
-      - TZ=${TZ} # timezone, defined in .env
-    network_mode: host
-    volumes:
-      - ${ROOT}/config/plex/db:/config # plex database
-      - ${ROOT}/config/plex/transcode:/transcode # temp transcoded files
-      - ${ROOT}/complete:/data # media library      
-
   bazarr:
     container_name: bazarr
     image: linuxserver/bazarr
@@ -100,18 +75,6 @@ services:
       - ${ROOT}/complete/tv:/tv # tv shows folder
 
 
-  overseerr:
-    image: lscr.io/linuxserver/overseerr:latest
-    container_name: overseerr
-    environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - TZ=${TZ}
-    volumes:
-      - ${ROOT}/config/overseerr:/config
-    network_mode: host
-    restart: unless-stopped
-
   heimdall:
     image: linuxserver/heimdall
     container_name: heimdall
@@ -121,5 +84,19 @@ services:
       - PGID=${PUID}
       - PUID=${PGID}
       - TZ=${TZ}
+    network_mode: host
+    restart: unless-stopped
+    
+  jellyfin:
+    image: lscr.io/linuxserver/jellyfin:latest
+    container_name: jellyfin
+    environment:
+      - PGID=${PUID}
+      - PUID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ${ROOT}/config/jellyfin:/config
+      - ${ROOT}/complete/tv:/data/tvshows
+      - ${ROOT}/complete/movies:/data/movies
     network_mode: host
     restart: unless-stopped
